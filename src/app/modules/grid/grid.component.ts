@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, OnDestroy } from '@angular/core';
 import { GridOptions } from "ag-grid";
 import { AgGridNg2, AgGridColumn } from 'ag-grid-angular';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ISortModel } from './grid-sequelize-sort';
 import { IFilterModel } from './grid-sequelize-filter';
 import { IIncludeModelItem } from './grid-sequelize-include';
@@ -30,6 +30,7 @@ export interface GridParams {
     canDelete: boolean,
   };
   columnDefs: Partial<AgGridColumn>[];
+  keepUserFilterSort: boolean;
 };
 
 @Component({
@@ -37,7 +38,7 @@ export interface GridParams {
   templateUrl: 'grid.component.html',
   styleUrls: ['grid.component.css']
 })
-export class GridComponent implements OnInit {
+export class GridComponent implements OnInit, OnDestroy {
   @Input() params: GridParams;
 
   @ViewChild('agGrid') agGrid: AgGridNg2;
@@ -54,6 +55,7 @@ export class GridComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
+    private route: ActivatedRoute,
     private router: Router
 
   ) {
@@ -67,7 +69,22 @@ export class GridComponent implements OnInit {
       enableColResize: true,
       rowSelection: 'single',
       onGridReady: () => {
-        this.refresh();
+        // If there is saved filter/sort
+        // Then read & load to grid
+        let savedFilterSortStr = localStorage.getItem(this.params.httpEndpoint);
+        if (savedFilterSortStr) {
+          let savedFilterSort = JSON.parse(savedFilterSortStr);
+          this.gridFilterModel = savedFilterSort.gridFilterModel || undefined;
+          this.gridSortModel = savedFilterSort.gridSortModel || [];
+          this.currentPageNumber = savedFilterSort.currentPageNumber;
+
+          // Changing filter or sort will call onSortChanged/onFilterChanged
+          // TODO: This will refresh page twice, fix it
+          this.gridOptions.api.setSortModel(this.gridSortModel);
+          this.gridOptions.api.setFilterModel(this.gridFilterModel);
+        } else {
+          this.refresh();
+        }
       },
       onSortChanged: () => {
         this.gridSortModel = this.gridOptions.api.getSortModel();
@@ -80,12 +97,22 @@ export class GridComponent implements OnInit {
       onRowDoubleClicked: (event) => {
         if (!this.params.gridFunctions.canEdit || !this.params.gridFunctions.editBaseUrl)
           return;
-        this.router.navigateByUrl(`${this.params.gridFunctions.editBaseUrl}/${event.data.id}`);
+        this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${event.data.id}`], { queryParams: { returnUrl: this.router.url } });
       }
     };
   }
 
   ngOnInit() { }
+
+  ngOnDestroy() {
+    // On Destroy read & save filter/sort/currentPage info
+    // We will load it when we are back
+    localStorage.setItem(this.params.httpEndpoint, JSON.stringify({
+      gridFilterModel: this.gridFilterModel,
+      gridSortModel: this.gridSortModel,
+      currentPageNumber: this.currentPageNumber
+    }));
+  }
 
   refresh() {
     let params = gridSequelizeFormatter(
@@ -101,7 +128,6 @@ export class GridComponent implements OnInit {
       .get(this.params.httpEndpoint + '/count', { params: params.where ? { where: params.where } : {} })
       .subscribe(
         (count) => {
-          console.log(1);
           this.totalRowCount = <number>count;
           this.totalPageCount = Math.ceil(this.totalRowCount / this.pageRowCount);
 
@@ -131,7 +157,7 @@ export class GridComponent implements OnInit {
   onButtonAdd() {
     if (!this.params.gridFunctions.canAdd || !this.params.gridFunctions.addBaseUrl)
       return;
-    this.router.navigateByUrl(`${this.params.gridFunctions.addBaseUrl}`);
+    this.router.navigate([`${this.params.gridFunctions.addBaseUrl}`], { queryParams: { returnUrl: this.router.url } });
   }
 
   onButtonEdit() {
@@ -140,7 +166,7 @@ export class GridComponent implements OnInit {
     let selRow = this.gridOptions.api.getSelectedRows()[0];
     if (!selRow)
       return;
-    this.router.navigateByUrl(`${this.params.gridFunctions.editBaseUrl}/${selRow.id}`);
+    this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${selRow.id}`], { queryParams: { returnUrl: this.router.url } });
   }
 
   onButtonDelete() {

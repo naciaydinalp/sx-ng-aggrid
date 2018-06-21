@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { AgGridModule } from 'ag-grid-angular';
 import { GridComponent } from './grid/grid.component';
+import { DateFormatPipe } from './pipe/dateFormat';
 
 @NgModule({
   imports: [
@@ -12,9 +13,13 @@ import { GridComponent } from './grid/grid.component';
     RouterModule.forRoot([]),
     AgGridModule.withComponents([])
   ],
-  declarations: [GridComponent],
+  declarations: [
+    GridComponent,
+    DateFormatPipe
+  ],
   exports: [
-    GridComponent
+    GridComponent,
+    DateFormatPipe
   ]
 })
 export class GridModule { }

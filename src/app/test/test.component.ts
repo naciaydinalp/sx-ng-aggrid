@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { GridComponent, GridFilterType, GridValueFormatter, GridParams } from '../../../dist';
+import { GridComponent, GridFilterType, GridValueFormatter, GridParams } from '../modules/grid/grid.component';
 
 @Component({
   selector: 'app-test',
@@ -10,9 +10,10 @@ export class TestComponent implements OnInit {
   params: GridParams = {
     httpEndpoint: 'http://localhost:3000/api/area',
     httpIncludeParam: [{ model: 'Factory', attributes: ['id', 'name'] }],
+    keepUserFilterSort: true,
     gridFunctions: {
-      addBaseUrl: '/test/edit',
-      editBaseUrl: '/test/edit',
+      addBaseUrl: '/area/edit',
+      editBaseUrl: '/area/edit',
       canAdd: true,
       canDelete: true,
       canEdit: true
@@ -31,7 +32,6 @@ export class TestComponent implements OnInit {
   };
   constructor() { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
 }
