@@ -2,6 +2,12 @@
   <div class="jumbotron">
     <h3>Details</h3>
     <hr/>
+
+    <!-- User Messages -->
+    <div *ngIf="userErrorMessage" class="alert alert-danger" role="alert">
+      {{userErrorMessage}}
+    </div>
+
     <div class="row">
       <div class="col-md-6">
         <form [formGroup]="fForm" novalidate (ngSubmit)="onSubmit(fForm)">

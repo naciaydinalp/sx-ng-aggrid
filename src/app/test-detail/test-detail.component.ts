@@ -16,8 +16,9 @@ export class TestDetailComponent implements OnInit, OnDestroy {
   private returnUrl: string = null;
   private httpEndpoint: string;
   id: number;
-  fieldValues: { [index: string]: any } = {};
+  fieldValues: { [index: string]: any, createdAt: string, updatedAt: string } = { createdAt: '', updatedAt: '' };
   fieldSelLists: { [index: string]: { id: string | number, name: string | number }[] } = {};
+  userErrorMessage: string = null;
 
   constructor(
     private fb: FormBuilder,
@@ -79,6 +80,10 @@ export class TestDetailComponent implements OnInit, OnDestroy {
       this.id = +params['id'];
 
       this.buildFieldSelLists(() => {
+        // Is adding?
+        if (this.id <= 0)
+          return;
+
         // Read record
         this.http
           .get(this.httpEndpoint + '/' + this.id)
@@ -96,7 +101,7 @@ export class TestDetailComponent implements OnInit, OnDestroy {
               });
             },
             (error) => {
-              console.log(error);
+              this.userErrorMessage = this.formatErrorMessage(error);
             });
       });
 
@@ -111,20 +116,42 @@ export class TestDetailComponent implements OnInit, OnDestroy {
   }
 
   onSubmit({ updateValues, valid }: { updateValues: any, valid: boolean }) {
-    // Update Record
-    this.http
-      .put(this.httpEndpoint + '/' + this.id, this.fForm.value)
-      .subscribe(
-        (result) => {
-          if (this.returnUrl)
-            this.router.navigateByUrl(this.returnUrl);
-        },
-        (error) => {
-          console.error(error);
-        });
+    this.userErrorMessage = null;
+
+    if (this.id <= 0) {
+      // Add Record
+      this.http
+        .post(this.httpEndpoint, this.fForm.value)
+        .subscribe(
+          (result) => {
+            if (this.returnUrl)
+              this.router.navigateByUrl(this.returnUrl);
+          },
+          (error) => {
+            this.userErrorMessage = this.formatErrorMessage(error);
+          });
+    }
+    else {
+      // Update Record
+      this.http
+        .put(this.httpEndpoint + '/' + this.id, this.fForm.value)
+        .subscribe(
+          (result) => {
+            if (this.returnUrl)
+              this.router.navigateByUrl(this.returnUrl);
+          },
+          (error) => {
+            this.userErrorMessage = this.formatErrorMessage(error);
+          });
+    }
   }
+
   onCancel() {
     if (this.returnUrl)
       this.router.navigateByUrl(this.returnUrl);
+  }
+
+  formatErrorMessage(error: any) {
+    return `${error.statusText} / ${error.error.name} : ${error.error.message}`
   }
 }

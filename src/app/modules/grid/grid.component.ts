@@ -95,9 +95,7 @@ export class GridComponent implements OnInit, OnDestroy {
         this.refresh();
       },
       onRowDoubleClicked: (event) => {
-        if (!this.params.gridFunctions.canEdit || !this.params.gridFunctions.editBaseUrl)
-          return;
-        this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${event.data.id}`], { queryParams: { returnUrl: this.router.url } });
+        this.onButtonEdit();
       }
     };
   }
@@ -146,18 +144,18 @@ export class GridComponent implements OnInit, OnDestroy {
                 this.gridOptions.api.sizeColumnsToFit();
               },
               (err) => {
-                console.error(err);
+                alert(this.formatErrorMessage(err));
               });
         },
         (err) => {
-          console.error(err);
+          alert(this.formatErrorMessage(err));
         });
   }
 
   onButtonAdd() {
     if (!this.params.gridFunctions.canAdd || !this.params.gridFunctions.addBaseUrl)
       return;
-    this.router.navigate([`${this.params.gridFunctions.addBaseUrl}`], { queryParams: { returnUrl: this.router.url } });
+    this.router.navigate([`${this.params.gridFunctions.addBaseUrl}/0`], { queryParams: { returnUrl: this.router.url } });
   }
 
   onButtonEdit() {
@@ -175,7 +173,19 @@ export class GridComponent implements OnInit, OnDestroy {
     let selRow = this.gridOptions.api.getSelectedRows()[0];
     if (!selRow)
       return;
-    //this.router.navigateByUrl(`${this.gridFunctions.editBaseUrl}/${selRow.id}`);
+
+    if (confirm('Delete?')) {
+      this.http
+        .delete(this.params.httpEndpoint + '/' + selRow.id)
+        .subscribe(
+          (result) => {
+            this.refresh();
+          },
+          (err) => {
+            alert(this.formatErrorMessage(err));
+          });
+    }
+
   }
 
   onButtonBackward() {
@@ -208,5 +218,9 @@ export class GridComponent implements OnInit, OnDestroy {
 
   onButtonRefresh() {
     this.refresh();
+  }
+
+  formatErrorMessage(error: any) {
+    return `${error.statusText} / ${error.error.name} : ${error.error.message}`
   }
 }
