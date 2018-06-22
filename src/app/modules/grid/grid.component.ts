@@ -221,6 +221,15 @@ export class GridComponent implements OnInit, OnDestroy {
   }
 
   formatErrorMessage(error: any) {
-    return `${error.statusText} / ${error.error.name} : ${error.error.message}`
+    // Http Client
+    if (error && error.error && error.error.message)
+      return `${error.statusText} / ${error.error.name || ''} : ${error.error.message}`
+
+    // Server Error
+    if (error && error.error && error.error.error && error.error.error.message)
+      return `${error.statusText} / ${error.error.name || ''} : ${error.error.error.message}`
+
+    console.error(error);
+    return JSON.stringify(error);
   }
 }
