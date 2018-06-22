@@ -14,7 +14,7 @@ An ag-grid template for easy usage including sample pages & a sample test-server
 ## Usage Example
 ```
 * cd YOUR_PROJECT
-* npm i --save-dev https://github.com/doganmurat/sequelize-ng-aggrid/releases/latest
+* npm i https://github.com/doganmurat/sequelize-ng-aggrid/releases/download/latest/sequelize-ng-aggrid-latest.tgz
 * npm i --save-dev ag-grid@^18.0.1 ag-grid-angular@^18.0.1 bootstrap font-awesome moment    --> Install peer dependencies
 
 Edit angular.json & add these lines to styles array
