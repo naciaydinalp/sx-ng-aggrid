@@ -47,7 +47,7 @@ export class GridComponent implements OnInit, OnDestroy {
   gridFilterModel: IFilterModel = null;
   totalPageCount: number = 1;
   currentPageNumber: number = 1;
-  pageRowCount: number = 3;
+  pageRowCount: number = 100;
   totalRowCount: number = 0;
 
   rowData: any[];
