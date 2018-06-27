@@ -17,6 +17,9 @@
                         <button *ngIf="params?.gridFunctions?.canDelete" type="button" class="btn btn-secondary" (click)="onButtonDelete()">
                             <i class="fa fa-times">&nbsp;</i>
                         </button>
+                        <button type="button" class="btn btn-secondary" (click)="onButtonExportCSV()">
+                                <i class="fa fa-download">&nbsp;</i>
+                            </button>
                         <button type="button" class="btn btn-secondary" (click)="onButtonRefresh()">
                             <i class="fa fa-undo">&nbsp;</i>
                         </button>

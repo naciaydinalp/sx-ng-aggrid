@@ -80,7 +80,7 @@ export class GridComponent implements OnInit, OnDestroy {
           let savedFilterSort = JSON.parse(savedFilterSortStr);
           this.gridFilterModel = savedFilterSort.gridFilterModel || undefined;
           this.gridSortModel = savedFilterSort.gridSortModel || [];
-          this.currentPageNumber = savedFilterSort.currentPageNumber;
+          this.currentPageNumber = savedFilterSort.currentPageNumber > 0 ? +savedFilterSort.currentPageNumber : 1;
 
           // Changing filter or sort will call onSortChanged/onFilterChanged
           // TODO: This will refresh page twice, fix it
@@ -130,6 +130,7 @@ export class GridComponent implements OnInit, OnDestroy {
       .get(this.params.httpEndpoint + '/count', { params: params.where ? { where: params.where } : {} })
       .subscribe(
         (count) => {
+          console.log(33)
           this.totalRowCount = <number>count;
           this.totalPageCount = Math.ceil(this.totalRowCount / this.pageRowCount);
 
@@ -247,19 +248,12 @@ export class GridComponent implements OnInit, OnDestroy {
     this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
       this.rowViewData.push({
         headerName: column.headerName,
-        value: column.valueFormatter ? column.valueFormatter(getValue(selRow, column.field)) : getValue(selRow, column.field)
+        value: column.valueFormatter ? column.valueFormatter({ value: getObjectValueWithDotNotation(selRow, column.field) }) : getObjectValueWithDotNotation(selRow, column.field)
       });
     });
 
     this.rowViewDataId = selRow.id;
     this.isRowViewMode = true;
-
-    function getValue(object, keys) {
-      return keys.split('.').reduce(function (o, k) {
-        return (o || {})[k];
-      }, object);
-    }
-
   }
 
   onButtonViewCancel() {
@@ -271,4 +265,73 @@ export class GridComponent implements OnInit, OnDestroy {
       return;
     this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${this.rowViewDataId}`], { queryParams: { returnUrl: this.router.url } });
   }
+
+  onButtonExportCSV() {
+    let params = gridSequelizeFormatter(
+      this.params.initialSortModel,
+      this.params.staticFilter,
+      0,
+      1000 * 1000, // Allow max record
+      this.gridSortModel,
+      this.gridFilterModel,
+      this.params.httpIncludeParam
+    );
+
+    this.http
+      .get(this.params.httpEndpoint, { params: params })
+      .subscribe(
+        (rowData: any[]) => {
+          let csvData: string = '"#"'; // First column is row number
+          // First Row is labels
+          this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
+            csvData = `${csvData};"${column.headerName}"`;
+          });
+          csvData += '\r\n';
+
+          // Add rows
+          for (let i = 0; i < rowData.length; i++) {
+            csvData += `"${i + 1}"`;
+            this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
+              let value = column.valueFormatter ? column.valueFormatter({ value: getObjectValueWithDotNotation(rowData[i], column.field) }) : getObjectValueWithDotNotation(rowData[i], column.field);
+              csvData = `${csvData};"${value}"`;
+            });
+            csvData += '\r\n';
+          }
+          downloadCSV(csvData, `Export_Grid`)
+        },
+        (err) => {
+          alert(this.formatErrorMessage(err));
+        });
+  }
+}
+
+/** 
+ * Helper Functions
+*/
+
+function getObjectValueWithDotNotation(object, keys) {
+  return keys.split('.').reduce(function (o, k) {
+    return (o || {})[k];
+  }, object);
+}
+
+function downloadCSV(data: string, filename: string) {
+  let htmlElement = document.createElement("a");
+  htmlElement.setAttribute('style', 'display:none;');
+  document.body.appendChild(htmlElement);
+
+  let blob = new Blob([data], { type: 'text/csv' });
+  let url = window.URL.createObjectURL(blob);
+  htmlElement.href = url;
+
+  let isIE = /*@cc_on!@*/false || !!(<any>document).documentMode;
+
+  if (isIE) {
+    let retVal = navigator.msSaveBlob(blob, filename + '.csv');
+  }
+  else {
+    htmlElement.download = filename + '.csv';
+  }
+
+  htmlElement.click();
 }
