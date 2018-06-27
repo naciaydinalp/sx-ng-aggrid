@@ -21,8 +21,8 @@ export class TestComponent implements OnInit {
     initialSortModel: null,
     staticFilter: null,
     columnDefs: [
-      { headerName: "ID", field: "id", filter: GridFilterType.Number },
-      { headerName: "Name", field: "name", width: 280, },
+      { headerName: "ID", field: "id", filter: GridFilterType.Number, hide: true },
+      { headerName: "Name", field: "name", width: 280 },
       { headerName: "comment", field: "comment" },
       { headerName: "factoryId", field: "Factory.name" },
       { headerName: "status", field: "status" },

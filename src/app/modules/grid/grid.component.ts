@@ -53,6 +53,10 @@ export class GridComponent implements OnInit, OnDestroy {
   rowData: any[];
   gridOptions: GridOptions;
 
+  isRowViewMode: boolean = false;
+  rowViewDataId: number = null;
+  rowViewData: { headerName: string, value: any }[] = [];
+
   constructor(
     private http: HttpClient,
     private route: ActivatedRoute,
@@ -160,7 +164,8 @@ export class GridComponent implements OnInit, OnDestroy {
 
   onButtonEdit() {
     if (!this.params.gridFunctions.canEdit || !this.params.gridFunctions.editBaseUrl)
-      return;
+      return this.onButtonView();
+
     let selRow = this.gridOptions.api.getSelectedRows()[0];
     if (!selRow)
       return;
@@ -231,5 +236,39 @@ export class GridComponent implements OnInit, OnDestroy {
 
     console.error(error);
     return JSON.stringify(error);
+  }
+
+  onButtonView() {
+    let selRow = this.gridOptions.api.getSelectedRows()[0];
+    if (!selRow)
+      return;
+
+    this.rowViewData = [];
+    this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
+      this.rowViewData.push({
+        headerName: column.headerName,
+        value: column.valueFormatter ? column.valueFormatter(getValue(selRow, column.field)) : getValue(selRow, column.field)
+      });
+    });
+
+    this.rowViewDataId = selRow.id;
+    this.isRowViewMode = true;
+
+    function getValue(object, keys) {
+      return keys.split('.').reduce(function (o, k) {
+        return (o || {})[k];
+      }, object);
+    }
+
+  }
+
+  onButtonViewCancel() {
+    this.isRowViewMode = false;
+  }
+
+  onButtonViewEdit() {
+    if (!this.params.gridFunctions.canEdit || !this.params.gridFunctions.editBaseUrl)
+      return;
+    this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${this.rowViewDataId}`], { queryParams: { returnUrl: this.router.url } });
   }
 }
