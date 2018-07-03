@@ -1,1 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+
+.ag-theme-fresh .ag-row-odd {
+    background-color: #ddd;
+}
+
+.ag-theme-fresh .ag-row-selected {
+    background-color: #5d9dc4;
+}
