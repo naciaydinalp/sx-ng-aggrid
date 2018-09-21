@@ -160,6 +160,9 @@ export class GridComponent implements OnInit, OnDestroy {
   onButtonAdd() {
     if (!this.params.gridFunctions.canAdd || !this.params.gridFunctions.addBaseUrl)
       return;
+
+    // router.navigate will not call ngOnDestroy. Call it manually
+    this.ngOnDestroy();
     this.router.navigate([`${this.params.gridFunctions.addBaseUrl}/0`], { queryParams: { returnUrl: this.router.url } });
   }
 
@@ -170,6 +173,9 @@ export class GridComponent implements OnInit, OnDestroy {
     let selRow = this.gridOptions.api.getSelectedRows()[0];
     if (!selRow)
       return;
+
+    // router.navigate will not call ngOnDestroy. Call it manually
+    this.ngOnDestroy();
     this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${selRow.id}`], { queryParams: { returnUrl: this.router.url } });
   }
 
@@ -263,6 +269,9 @@ export class GridComponent implements OnInit, OnDestroy {
   onButtonViewEdit() {
     if (!this.params.gridFunctions.canEdit || !this.params.gridFunctions.editBaseUrl)
       return;
+
+    // router.navigate will not call ngOnDestroy. Call it manually
+    this.ngOnDestroy();
     this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${this.rowViewDataId}`], { queryParams: { returnUrl: this.router.url } });
   }
 
