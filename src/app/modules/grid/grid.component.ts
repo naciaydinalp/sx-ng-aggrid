@@ -75,15 +75,12 @@ export class GridComponent implements OnInit, OnDestroy {
       onGridReady: () => {
         // If there is saved filter/sort
         // Then read & load to grid
-        let savedFilterSortStr = localStorage.getItem(this.params.httpEndpoint);
-        if (savedFilterSortStr) {
-          let savedFilterSort = JSON.parse(savedFilterSortStr);
+        let savedFilterSort = this.loadLocalStorageData();
+        if (savedFilterSort) {
           this.gridFilterModel = savedFilterSort.gridFilterModel || undefined;
           this.gridSortModel = savedFilterSort.gridSortModel || [];
           this.currentPageNumber = savedFilterSort.currentPageNumber > 0 ? +savedFilterSort.currentPageNumber : 1;
 
-          // Changing filter or sort will call onSortChanged/onFilterChanged
-          // TODO: This will refresh page twice, fix it
           this.gridOptions.api.setSortModel(this.gridSortModel);
           this.gridOptions.api.setFilterModel(this.gridFilterModel);
         } else {
@@ -107,6 +104,10 @@ export class GridComponent implements OnInit, OnDestroy {
   ngOnInit() { }
 
   ngOnDestroy() {
+    this.saveLocalStorageData();
+  }
+
+  saveLocalStorageData() {
     // On Destroy read & save filter/sort/currentPage info
     // We will load it when we are back
     localStorage.setItem(this.params.httpEndpoint, JSON.stringify({
@@ -114,6 +115,14 @@ export class GridComponent implements OnInit, OnDestroy {
       gridSortModel: this.gridSortModel,
       currentPageNumber: this.currentPageNumber
     }));
+  }
+
+  loadLocalStorageData() {
+    let str = localStorage.getItem(this.params.httpEndpoint)
+    if (str) {
+      return JSON.parse(str)
+    }
+    return null;
   }
 
   refresh() {
@@ -127,13 +136,16 @@ export class GridComponent implements OnInit, OnDestroy {
       this.params.httpIncludeParam
     );
     this.http
-      .get(this.params.httpEndpoint + '/count', { params: params.where ? { where: params.where } : {} })
+      .get(this.params.httpEndpoint + '/count', { params: params })
       .subscribe(
         (count) => {
           this.totalRowCount = <number>count;
           this.totalPageCount = Math.ceil(this.totalRowCount / this.pageRowCount);
 
           // check currentPageNumber & offset
+          if (this.currentPageNumber == 0 && this.totalPageCount > 0)
+            this.currentPageNumber = 1;
+
           if (this.currentPageNumber > this.totalPageCount) {
             this.currentPageNumber = this.totalPageCount;
             params.offset = this.currentPageNumber > 0 ? (this.currentPageNumber - 1) * this.pageRowCount : 0
@@ -160,8 +172,7 @@ export class GridComponent implements OnInit, OnDestroy {
     if (!this.params.gridFunctions.canAdd || !this.params.gridFunctions.addBaseUrl)
       return;
 
-    // router.navigate will not call ngOnDestroy. Call it manually
-    this.ngOnDestroy();
+    this.saveLocalStorageData();
     this.router.navigate([`${this.params.gridFunctions.addBaseUrl}/0`], { queryParams: { returnUrl: this.router.url } });
   }
 
@@ -173,8 +184,7 @@ export class GridComponent implements OnInit, OnDestroy {
     if (!selRow)
       return;
 
-    // router.navigate will not call ngOnDestroy. Call it manually
-    this.ngOnDestroy();
+    this.saveLocalStorageData();
     this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${selRow.id}`], { queryParams: { returnUrl: this.router.url } });
   }
 
@@ -257,6 +267,7 @@ export class GridComponent implements OnInit, OnDestroy {
       });
     });
 
+    this.saveLocalStorageData();
     this.rowViewDataId = selRow.id;
     this.isRowViewMode = true;
   }
@@ -269,8 +280,7 @@ export class GridComponent implements OnInit, OnDestroy {
     if (!this.params.gridFunctions.canEdit || !this.params.gridFunctions.editBaseUrl)
       return;
 
-    // router.navigate will not call ngOnDestroy. Call it manually
-    this.ngOnDestroy();
+    this.saveLocalStorageData();
     this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${this.rowViewDataId}`], { queryParams: { returnUrl: this.router.url } });
   }
 

@@ -12,7 +12,7 @@ export function gridIncludeFormatter(includeModel: IIncludeModelItem[], filterMo
     if (!filterModel)
         return JSON.stringify(includeModel);
 
-    let includeModelCopy = includeModel.slice(0);;
+    let includeModelCopy = JSON.parse(JSON.stringify(includeModel));
     Object.keys(filterModel).forEach((key) => {
         if (key.indexOf('.') < 0)
             return;
