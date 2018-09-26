@@ -130,7 +130,6 @@ export class GridComponent implements OnInit, OnDestroy {
       .get(this.params.httpEndpoint + '/count', { params: params.where ? { where: params.where } : {} })
       .subscribe(
         (count) => {
-          console.log(33)
           this.totalRowCount = <number>count;
           this.totalPageCount = Math.ceil(this.totalRowCount / this.pageRowCount);
 
