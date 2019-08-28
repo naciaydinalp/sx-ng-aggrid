@@ -1,31 +1,36 @@
-import * as Sequelize from 'sequelize';
 import { OnOffStatus } from '../enum/OnOffStatus';
+import { Table, Column, Model, DataType, ForeignKey,BelongsTo} from 'sequelize-typescript';
+import Factory from './factory';
 
-export const modelName = 'Area';
 
-export interface Attributes {
-    id: number;
-    name: string;
+@Table({
+    tableName: 'area',
+    modelName: 'area',
+    freezeTableName: true,
+})
+export default class Area extends Model<Area> {
+    @Column({
+        type: DataType.TEXT,
+        allowNull:false,
+        unique:true
+    })
+    name: Date;
+
+    @Column({
+        type: DataType.TEXT,
+    })
     comment: string;
-    factoryId: number;
+
+    @Column({
+        type: DataType.ENUM(OnOffStatus.Off,OnOffStatus.On),
+        allowNull: false,
+    })
     status: OnOffStatus;
-};
 
-export interface Instance extends Sequelize.Instance<Attributes>, Attributes { };
+    @ForeignKey(() => Factory)
+    @Column
+    factoryId: number;
 
-export const define = (sequalize: Sequelize.Sequelize): Sequelize.Model<Instance, Attributes> => {
-    let model = sequalize.define<Instance, Attributes>(modelName, {
-        id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
-        name: { type: Sequelize.STRING(32), allowNull: false, unique: true },
-        comment: Sequelize.STRING(32),
-        factoryId: { type: Sequelize.INTEGER, allowNull: false, onDelete: 'RESTRICT' },
-        status: {
-            type: Sequelize.ENUM,
-            values: Object.keys(OnOffStatus)
-        }
-    });
-
-    model.belongsTo(sequalize.models['Factory'], { foreignKey: 'factoryId' });
-
-    return model;
-};
+    @BelongsTo(() => Factory)
+    factory: Factory;
+}

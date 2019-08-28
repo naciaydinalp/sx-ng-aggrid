@@ -1,20 +1,22 @@
 import * as path from 'path';
 import * as express from 'express';
-import { Response, Request, NextFunction } from 'express';
+import { Response, Request } from 'express';
+import { Sequelize } from 'sequelize-typescript';
+import * as sequelize from 'sequelize';
 import * as http from 'http';
 import * as compression from 'compression';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
-import * as Sequelize from 'sequelize';
-import { Connection, ConnectionList, RestApi, RestAuth } from 'sequelize-rest-acl';
 
 import config from './config';
 import restApi from './rest-api';
-import { defineModels } from './models/__models';
+import defineModels from './models/__models';
 
 let app: express.Express = null;
 let server: http.Server = null;
-let dbConnection: Connection = null;
+
+// Db Connection
+let connection: Sequelize = null;
 let port: number = config.port || 3000;
 
 app = express();
@@ -41,28 +43,77 @@ server.on('listening', () => {
   console.info('********** Server Listening on port ' + port + ' *********');
 });
 
-dbConnection = new Connection(config.mainDb);
-
-dbConnection.connect()
-  .then(() => {
-    ConnectionList.add(config.mainDb.name, dbConnection);
-    server.listen(port);
-
-    // Disable auth
-    // app.use('/', RestAuth.rootMiddleware(dbConnection.getConnection()));
-
-    // Rest Api
-    defineModels(dbConnection.getConnection());
-    restApi(app, dbConnection);
-
+connect2Db(() => {
+  // Define Models
+  defineModels(connection, (err): void => {
+    if (err) console.error('defineModels Error:', err);
+    restApi(app, connection);
     // Error Handlers
     defineErrorHandlers();
-  })
-  .catch((err: Error) => {
-    console.error(err.message);
-    process.exit(-1);
+    server.listen(port);
+  });
+});
+
+function connect2Db(cb: () => void): void {
+  // Sequelize Promise Config
+  sequelize.Promise.config({
+    warnings: false, // Disable warning output
+    longStackTraces: true,
+    cancellation: true,
+    monitoring: true,
   });
 
+  const Op = sequelize.Op;
+  const operatorsAliases = {
+    $eq: Op.eq,
+    $ne: Op.ne,
+    $gte: Op.gte,
+    $gt: Op.gt,
+    $lte: Op.lte,
+    $lt: Op.lt,
+    $not: Op.not,
+    $in: Op.in,
+    $notIn: Op.notIn,
+    $is: Op.is,
+    $like: Op.like,
+    $notLike: Op.notLike,
+    $iLike: Op.iLike,
+    $notILike: Op.notILike,
+    $regexp: Op.regexp,
+    $notRegexp: Op.notRegexp,
+    $iRegexp: Op.iRegexp,
+    $notIRegexp: Op.notIRegexp,
+    $between: Op.between,
+    $notBetween: Op.notBetween,
+    $overlap: Op.overlap,
+    $contains: Op.contains,
+    $contained: Op.contained,
+    $adjacent: Op.adjacent,
+    $strictLeft: Op.strictLeft,
+    $strictRight: Op.strictRight,
+    $noExtendRight: Op.noExtendRight,
+    $noExtendLeft: Op.noExtendLeft,
+    $and: Op.and,
+    $or: Op.or,
+    $any: Op.any,
+    $all: Op.all,
+    $values: Op.values,
+    $col: Op.col,
+  };
+
+  // Db Connect
+  connection = new Sequelize(Object.assign(config.mainDb, { operatorsAliases }));
+  connection
+    .authenticate()
+    .then((): void => {
+      cb();
+    })
+    .catch((err: Error): void => {
+      console.error(`DB Connection Error. Err: ${err.message}`);
+      console.error('Exiting...');
+      process.exit(-1);
+    });
+}
 
 /**
  * Error Handlers

@@ -1,20 +1,19 @@
 import * as express from 'express';
-import * as Sequelize from 'sequelize';
-import { RestAuth, RestApi, Connection } from 'sequelize-rest-acl';
-import { models } from '../models/__models';
-import * as Model from '../models/factory';
+import { ModelRestApi } from 'sx-sequelize-api';
+import Model from '../models/factory';
+import { Sequelize } from 'sequelize-typescript';
 
-export default function (db: Connection): express.Router {
+export default function (connection: Sequelize): express.Router {
     let router: express.Router = express.Router();
-    let DbModel = models.Factory;
-    let modelApi = new RestApi<Model.Instance, Model.Attributes>(DbModel, db.getConnection().models);
+    let DbModel = Model;
+    let modelApi = new ModelRestApi(DbModel, connection);
 
-    router.get('/', /**RestAuth.middleware('@auth', 'GET:All factory'),**/ modelApi.getAll());
-    router.get('/count',/** RestAuth.middleware('@auth', 'GET:COUNT factory'), **/modelApi.count());
-    router.get('/:id',/** RestAuth.middleware('@auth', 'GET:ONE factory'),**/ modelApi.getById());
-    router.post('/',/** RestAuth.middleware('area', 'CREATE factory'),**/ modelApi.create());
-    router.put('/:id',/** RestAuth.middleware('area', 'UPDATE factory'),**/ modelApi.updateById());
-    router.delete('/:id',/** RestAuth.middleware('area', 'DELETE factory'), **/modelApi.deleteById());
+    router.get('/', modelApi.getAll());
+    router.get('/count', modelApi.count());
+    router.get('/:id', modelApi.getById());
+    router.post('/', modelApi.create());
+    router.put('/:id', modelApi.updateById());
+    router.delete('/:id', modelApi.deleteById());
 
     return router;
 }
