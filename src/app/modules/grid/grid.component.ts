@@ -41,7 +41,7 @@ export interface GridParams {
 export class GridComponent implements OnInit, OnDestroy {
   @Input() params: GridParams;
 
-  @ViewChild('agGrid') agGrid: AgGridNg2;
+  @ViewChild('agGrid',{static:false}) agGrid: AgGridNg2;
 
   gridSortModel: ISortModel[] = [];
   gridFilterModel: IFilterModel = null;
