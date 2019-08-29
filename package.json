@@ -1,6 +1,7 @@
 {
-  "name": "sequelize-ng-aggrid",
+  "name": "sx-ng-aggrid",
   "version": "2.0.0",
+  "description": "Angular Grid Table(ag-grid) Componet ",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -12,12 +13,21 @@
     "publish":"npm run packagr && cd dist && npm publish ",
     "git": "git add . --all ; git commit ; git push -u origin master"
   },
-  "author": "Murat Doğan",
+  "author": "SimpLinx",
   "license": "MIT",
   "repository": {
-    "url": "git+https://github.com/doganmurat/sequelize-ng-aggrid.git",
+    "url": "git+https://github.com/simplinx-ltd/simplinx-ltd-ng-aggrid.git",
     "type": "git"
   },
+  "keywords": [
+    "Angular",
+    "ag-grid",
+    "Grid"
+  ],
+  "bugs": {
+    "url": "https://github.com/simplinx-ltd/sx-ng-aggrid/issues"
+  },
+  "homepage": "https://github.com/simplinx-ltd/sx-ng-aggrid#readme",
   "peerDependencies": {
     "@angular/animations": "~8.1.0",
     "@angular/common": "~8.1.0",

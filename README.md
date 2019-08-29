@@ -1,20 +1,20 @@
-# SequelizeNgAggrid
+# sx-ng-aggrid
 An ag-grid template for easy usage including sample pages & a sample test-server.
 
-![Sample Grid](https://github.com/doganmurat/sequelize-ng-aggrid/raw/master/sample-grid.png)
+![Sample Grid](https://github.com/simplinx-ltd/sx-ng-aggrid/raw/master/sample-grid.png)
 
-![Sample Detail](https://github.com/doganmurat/sequelize-ng-aggrid/raw/master/sample-detail.png)
+![Sample Detail](https://github.com/simplinx-ltd/sx-ng-aggrid/raw/master/sample-detail.png)
 
 >Frontend : Angular 8 & Ag-grid
 
->Backend : Sequelize & Express. Check [sequelize-rest-acl](https://github.com/doganmurat/sequelize-rest-acl)
+>Backend : Sequelize & Express. Check [sx-sequelize-api](https://github.com/simplinx-ltd/sx-sequelize-api)
 
 > This project is using ng-packagr to package library
 
 ## Usage Example
 ```
 * cd YOUR_PROJECT
-* npm i --save-dev sequelize-ng-aggrid
+* npm i --save-dev sx-ng-aggrid
 * npm i --save-dev ag-grid@^18.0.1 ag-grid-angular@^18.0.1 bootstrap font-awesome moment    --> Install peer dependencies
 
 Edit angular.json & add these lines to styles array
@@ -24,7 +24,7 @@ Edit angular.json & add these lines to styles array
 "node_modules/font-awesome/css/font-awesome.css",
 
 Edit app.module.ts
-import { GridModule } from 'sequelize-ng-aggrid';           --> Add import
+import { GridModule } from 'sx-ng-aggrid';           --> Add import
 ....
  imports: [
     BrowserModule,
@@ -38,8 +38,8 @@ Check test & test-detail components for other usage examples
 
 ## Build
 ```
-* git clone https://github.com/doganmurat/sequelize-ng-aggrid.git
-* cd sequelize-ng-aggrid
+* git clone https://github.com/simplinx-ltd/sx-ng-aggrid.git
+* cd sx-ng-aggrid
 * npm i
 * cd test-server
 * npm i
@@ -47,16 +47,16 @@ Check test & test-detail components for other usage examples
 * npm run start     --> This will start test-server. Check db config in test-server/config.ts
 
 In another shell
-* cd sequelize-ng-aggrid
+* cd sx-ng-aggrid
 * npm run start     --> Start test app
 
 Packaging
 * npm run packagr   --> Package App
 * cd dist
-* npm pack --> This will create sequelize-ng-aggrid.XX.tgz. 
+* npm pack --> This will create sx-ng-aggrid.XX.tgz. 
 ```
 
 >You can use library from other angular projects like  this;
 ```
-npm install ./sequelize-ng-aggrid.XX.tgz
+npm install ./sx-ng-aggrid.XX.tgz
 ```
