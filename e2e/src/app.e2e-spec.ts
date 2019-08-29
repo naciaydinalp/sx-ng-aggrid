@@ -10,7 +10,7 @@ describe('workspace-project App', () => {
 
   it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getTitleText()).toEqual('Welcome to sequelize-ng-aggrid!');
+    expect(page.getTitleText()).toEqual('Welcome to sx-ng-aggrid!');
   });
 
   afterEach(async () => {

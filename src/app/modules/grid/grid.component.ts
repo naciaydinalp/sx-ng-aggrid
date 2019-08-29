@@ -34,7 +34,7 @@ export interface GridParams {
 };
 
 @Component({
-  selector: 'sequelize-ng-aggrid',
+  selector: 'sx-ng-aggrid',
   templateUrl: 'grid.component.html',
   styleUrls: ['grid.component.css']
 })

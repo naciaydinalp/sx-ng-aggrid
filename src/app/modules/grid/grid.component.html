@@ -1,6 +1,6 @@
 <!-- Grid View -->
-<div *ngIf="!isRowViewMode" style="width: 100%; height: 100%;" class="container-fluid sequelize-ng-aggrid-main">
-    <div style="width: 100%;height:42px" class=" sequelize-ng-aggrid-toolbar">
+<div *ngIf="!isRowViewMode" style="width: 100%; height: 100%;" class="container-fluid sx-ng-aggrid-main">
+    <div style="width: 100%;height:42px" class=" sx-ng-aggrid-toolbar">
         <div class="row">
             <div class="col-md-5">
                 <div class="btn-toolbar" role="toolbar">
@@ -60,7 +60,7 @@
             </div>
         </div>
     </div>
-    <div style="width: 100%; height: 100%;" class="sequelize-ng-aggrid-toolbar">
+    <div style="width: 100%; height: 100%;" class="sx-ng-aggrid-toolbar">
         <ag-grid-angular #agGrid style="width: 100%; height: 100%;" class="ag-theme-fresh" [rowData]="rowData"
             [columnDefs]="params?.columnDefs" [gridOptions]="gridOptions"></ag-grid-angular>
     </div>
