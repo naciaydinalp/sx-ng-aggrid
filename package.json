@@ -16,7 +16,7 @@
   "author": "SimpLinx",
   "license": "MIT",
   "repository": {
-    "url": "git+https://github.com/simplinx-ltd/simplinx-ltd-ng-aggrid.git",
+    "url": "git+https://github.com/simplinx-ltd/ng-aggrid.git",
     "type": "git"
   },
   "keywords": [
