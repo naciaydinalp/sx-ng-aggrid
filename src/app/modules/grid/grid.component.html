@@ -70,7 +70,6 @@
 <div *ngIf="isRowViewMode" class="container-fluid">
     <div class="row">
         <div class="col-md-8">
-            <div class="jumbotron sx-ng-aggrid-detail">
                 <h3>Details
                     <span class="pull-right">
                         <button *ngIf="params?.gridFunctions?.canEdit" type="button" class="btn btn-primary" (click)="onButtonViewEdit()">
@@ -89,7 +88,6 @@
                     <label>{{field.headerName}}</label>
                     <input class="form-control" [value]="field.value" disabled>
                 </div>
-            </div>
         </div>
     </div>
 </div>
