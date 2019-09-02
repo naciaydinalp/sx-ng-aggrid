@@ -1,6 +1,6 @@
 {
   "name": "sx-ng-aggrid",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Angular Grid Table(ag-grid) Componet ",
   "scripts": {
     "ng": "ng",
@@ -16,7 +16,7 @@
   "author": "SimpLinx",
   "license": "MIT",
   "repository": {
-    "url": "git+https://github.com/simplinx-ltd/ng-aggrid.git",
+    "url": "git+https://github.com/simplinx-ltd/sx-ng-aggrid.git",
     "type": "git"
   },
   "keywords": [
