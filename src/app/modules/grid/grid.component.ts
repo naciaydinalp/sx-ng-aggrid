@@ -93,7 +93,6 @@ export class GridComponent implements OnInit, OnDestroy {
       },
       onFilterChanged: () => {
         this.gridFilterModel = this.gridOptions.api.getFilterModel();
-        console.log(this.gridFilterModel)
         this.refresh();
       },
       onRowDoubleClicked: (event) => {
@@ -243,16 +242,21 @@ export class GridComponent implements OnInit, OnDestroy {
   }
 
   formatErrorMessage(error: any) {
-    // Http Client
-    if (error && error.message)
-      return `${error.statusText} / ${error.name || ''} : ${error.message}`
-
-    // Server Error
-    if (error && error.error && error.error.error && error.error.error.message)
-      return `${error.statusText} / ${error.error.name || ''} : ${error.error.error.message}`
-
     console.error(error);
-    return JSON.stringify(error);
+
+    let errMsg = 'Unknown Error';
+    if (error && error.error && error.error.error && error.error.error.message)
+      errMsg = error.error.error.message;
+    else {
+      if (error && error.error && error.error.message)
+        errMsg = error.error.message;
+      else {
+        if (error && error.message)
+          errMsg = error.message;
+      }
+    }
+
+    return errMsg;
   }
 
   onButtonView() {
