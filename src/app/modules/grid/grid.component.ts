@@ -41,7 +41,7 @@ export interface GridParams {
 export class GridComponent implements OnInit, OnDestroy {
   @Input() params: GridParams;
 
-  @ViewChild('agGrid',{static:false}) agGrid: AgGridNg2;
+  @ViewChild('agGrid', { static: false }) agGrid: AgGridNg2;
 
   gridSortModel: ISortModel[] = [];
   gridFilterModel: IFilterModel = null;
@@ -66,7 +66,7 @@ export class GridComponent implements OnInit, OnDestroy {
     this.gridOptions = {
       defaultColDef: {
         width: 120,
-        filterParams: { newRowsAction: 'keep' }
+        filterParams: { caseSensitive: true, debounceMs: 1000, newRowsAction: 'keep' }
       },
       enableServerSideFilter: true,
       enableServerSideSorting: true,
@@ -93,6 +93,7 @@ export class GridComponent implements OnInit, OnDestroy {
       },
       onFilterChanged: () => {
         this.gridFilterModel = this.gridOptions.api.getFilterModel();
+        console.log(this.gridFilterModel)
         this.refresh();
       },
       onRowDoubleClicked: (event) => {
