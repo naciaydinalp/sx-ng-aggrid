@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, Input, OnDestroy } from '@angular/core';
-import { GridOptions } from "ag-grid";
+import { GridOptions } from 'ag-grid';
 import { AgGridNg2, AgGridColumn } from 'ag-grid-angular';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -13,7 +13,7 @@ export enum GridFilterType {
   Text = 'agTextColumnFilter',
   Date = 'agDateColumnFilter',
   Number = 'agNumberColumnFilter'
-};
+}
 
 export const GridValueFormatter = _GridValueFormatter;
 
@@ -31,9 +31,10 @@ export interface GridParams {
   };
   columnDefs: Partial<AgGridColumn>[];
   keepUserFilterSort: boolean;
-};
+}
 
 @Component({
+  // tslint:disable-next-line: component-selector
   selector: 'sx-ng-aggrid',
   templateUrl: 'grid.component.html',
   styleUrls: ['grid.component.css']
@@ -45,15 +46,15 @@ export class GridComponent implements OnInit, OnDestroy {
 
   gridSortModel: ISortModel[] = [];
   gridFilterModel: IFilterModel = null;
-  totalPageCount: number = 1;
-  currentPageNumber: number = 1;
-  pageRowCount: number = 100;
-  totalRowCount: number = 0;
+  totalPageCount = 1;
+  currentPageNumber = 1;
+  pageRowCount = 100;
+  totalRowCount = 0;
 
   rowData: any[];
   gridOptions: GridOptions;
 
-  isRowViewMode: boolean = false;
+  isRowViewMode = false;
   rowViewDataId: number = null;
   rowViewData: { headerName: string, value: any }[] = [];
 
@@ -75,8 +76,8 @@ export class GridComponent implements OnInit, OnDestroy {
       onGridReady: () => {
         // If there is saved filter/sort
         // Then read & load to grid
-        let savedFilterSort = this.loadLocalStorageData();
-        if (savedFilterSort) {
+        const savedFilterSort = this.loadLocalStorageData();
+        if (savedFilterSort && this.params.keepUserFilterSort) {
           this.gridFilterModel = savedFilterSort.gridFilterModel || undefined;
           this.gridSortModel = savedFilterSort.gridSortModel || [];
           this.currentPageNumber = savedFilterSort.currentPageNumber > 0 ? +savedFilterSort.currentPageNumber : 1;
@@ -108,6 +109,10 @@ export class GridComponent implements OnInit, OnDestroy {
   }
 
   saveLocalStorageData() {
+    if (!this.params.keepUserFilterSort) {
+      return;
+    }
+
     // On Destroy read & save filter/sort/currentPage info
     // We will load it when we are back
     localStorage.setItem(this.params.httpEndpoint, JSON.stringify({
@@ -118,15 +123,15 @@ export class GridComponent implements OnInit, OnDestroy {
   }
 
   loadLocalStorageData() {
-    let str = localStorage.getItem(this.params.httpEndpoint)
+    const str = localStorage.getItem(this.params.httpEndpoint);
     if (str) {
-      return JSON.parse(str)
+      return JSON.parse(str);
     }
     return null;
   }
 
   refresh() {
-    let params = gridSequelizeFormatter(
+    const params = gridSequelizeFormatter(
       this.params.initialSortModel,
       this.params.staticFilter,
       this.currentPageNumber,
@@ -136,26 +141,27 @@ export class GridComponent implements OnInit, OnDestroy {
       this.params.httpIncludeParam
     );
     this.http
-      .get(this.params.httpEndpoint + '/count', { params: params })
+      .get(this.params.httpEndpoint + '/count', { params })
       .subscribe(
         (count) => {
-          this.totalRowCount = <number>count;
+          this.totalRowCount = count as number;
           this.totalPageCount = Math.ceil(this.totalRowCount / this.pageRowCount);
 
           // check currentPageNumber & offset
-          if (this.currentPageNumber == 0 && this.totalPageCount > 0)
+          if (this.currentPageNumber == 0 && this.totalPageCount > 0) {
             this.currentPageNumber = 1;
+          }
 
           if (this.currentPageNumber > this.totalPageCount) {
             this.currentPageNumber = this.totalPageCount;
-            params.offset = this.currentPageNumber > 0 ? (this.currentPageNumber - 1) * this.pageRowCount : 0
+            params.offset = this.currentPageNumber > 0 ? (this.currentPageNumber - 1) * this.pageRowCount : 0;
           }
 
           this.http
-            .get(this.params.httpEndpoint, { params: params })
+            .get(this.params.httpEndpoint, { params })
             .subscribe(
               (rowData) => {
-                this.rowData = <any>rowData;
+                this.rowData = rowData as any;
                 this.gridOptions.api.setRowData(this.rowData);
                 this.gridOptions.api.sizeColumnsToFit();
               },
@@ -169,31 +175,36 @@ export class GridComponent implements OnInit, OnDestroy {
   }
 
   onButtonAdd() {
-    if (!this.params.gridFunctions.canAdd || !this.params.gridFunctions.addBaseUrl)
+    if (!this.params.gridFunctions.canAdd || !this.params.gridFunctions.addBaseUrl) {
       return;
+    }
 
     this.saveLocalStorageData();
     this.router.navigate([`${this.params.gridFunctions.addBaseUrl}/0`], { queryParams: { returnUrl: this.router.url } });
   }
 
   onButtonEdit() {
-    if (!this.params.gridFunctions.canEdit || !this.params.gridFunctions.editBaseUrl)
+    if (!this.params.gridFunctions.canEdit || !this.params.gridFunctions.editBaseUrl) {
       return this.onButtonView();
+    }
 
-    let selRow = this.gridOptions.api.getSelectedRows()[0];
-    if (!selRow)
+    const selRow = this.gridOptions.api.getSelectedRows()[0];
+    if (!selRow) {
       return;
+    }
 
     this.saveLocalStorageData();
     this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${selRow.id}`], { queryParams: { returnUrl: this.router.url } });
   }
 
   onButtonDelete() {
-    if (!this.params.gridFunctions.canDelete)
+    if (!this.params.gridFunctions.canDelete) {
       return;
-    let selRow = this.gridOptions.api.getSelectedRows()[0];
-    if (!selRow)
+    }
+    const selRow = this.gridOptions.api.getSelectedRows()[0];
+    if (!selRow) {
       return;
+    }
 
     if (confirm('Delete?')) {
       this.http
@@ -210,29 +221,33 @@ export class GridComponent implements OnInit, OnDestroy {
   }
 
   onButtonBackward() {
-    if (this.currentPageNumber <= 1)
+    if (this.currentPageNumber <= 1) {
       return;
+    }
     this.currentPageNumber = 1;
     this.refresh();
   }
 
   onButtonForward() {
-    if (this.currentPageNumber >= this.totalPageCount)
+    if (this.currentPageNumber >= this.totalPageCount) {
       return;
+    }
     this.currentPageNumber = this.totalPageCount;
     this.refresh();
   }
 
   onButtonNext() {
-    if (this.currentPageNumber >= this.totalPageCount)
+    if (this.currentPageNumber >= this.totalPageCount) {
       return;
+    }
     this.currentPageNumber = this.currentPageNumber + 1;
     this.refresh();
   }
 
   onButtonPrevious() {
-    if (this.currentPageNumber <= 1)
+    if (this.currentPageNumber <= 1) {
       return;
+    }
     this.currentPageNumber = this.currentPageNumber - 1;
     this.refresh();
   }
@@ -245,14 +260,15 @@ export class GridComponent implements OnInit, OnDestroy {
     console.error(error);
 
     let errMsg = 'Unknown Error';
-    if (error && error.error && error.error.error && error.error.error.message)
+    if (error && error.error && error.error.error && error.error.error.message) {
       errMsg = error.error.error.message;
-    else {
-      if (error && error.error && error.error.message)
+    } else {
+      if (error && error.error && error.error.message) {
         errMsg = error.error.message;
-      else {
-        if (error && error.message)
+      } else {
+        if (error && error.message) {
           errMsg = error.message;
+        }
       }
     }
 
@@ -260,9 +276,10 @@ export class GridComponent implements OnInit, OnDestroy {
   }
 
   onButtonView() {
-    let selRow = this.gridOptions.api.getSelectedRows()[0];
-    if (!selRow)
+    const selRow = this.gridOptions.api.getSelectedRows()[0];
+    if (!selRow) {
       return;
+    }
 
     this.rowViewData = [];
     this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
@@ -282,15 +299,16 @@ export class GridComponent implements OnInit, OnDestroy {
   }
 
   onButtonViewEdit() {
-    if (!this.params.gridFunctions.canEdit || !this.params.gridFunctions.editBaseUrl)
+    if (!this.params.gridFunctions.canEdit || !this.params.gridFunctions.editBaseUrl) {
       return;
+    }
 
     this.saveLocalStorageData();
     this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${this.rowViewDataId}`], { queryParams: { returnUrl: this.router.url } });
   }
 
   onButtonExportCSV() {
-    let params = gridSequelizeFormatter(
+    const params = gridSequelizeFormatter(
       this.params.initialSortModel,
       this.params.staticFilter,
       0,
@@ -301,10 +319,10 @@ export class GridComponent implements OnInit, OnDestroy {
     );
 
     this.http
-      .get(this.params.httpEndpoint, { params: params })
+      .get(this.params.httpEndpoint, { params })
       .subscribe(
         (rowData: any[]) => {
-          let csvData: string = '"#"'; // First column is row number
+          let csvData = '"#"'; // First column is row number
           // First Row is labels
           this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
             csvData = `${csvData};"${column.headerName}"`;
@@ -315,12 +333,12 @@ export class GridComponent implements OnInit, OnDestroy {
           for (let i = 0; i < rowData.length; i++) {
             csvData += `"${i + 1}"`;
             this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
-              let value = column.valueFormatter ? column.valueFormatter({ value: getObjectValueWithDotNotation(rowData[i], column.field) }) : getObjectValueWithDotNotation(rowData[i], column.field);
+              const value = column.valueFormatter ? column.valueFormatter({ value: getObjectValueWithDotNotation(rowData[i], column.field) }) : getObjectValueWithDotNotation(rowData[i], column.field);
               csvData = `${csvData};"${value}"`;
             });
             csvData += '\r\n';
           }
-          downloadCSV(csvData, `Export_Grid`)
+          downloadCSV(csvData, `Export_Grid`);
         },
         (err) => {
           alert(this.formatErrorMessage(err));
@@ -328,31 +346,30 @@ export class GridComponent implements OnInit, OnDestroy {
   }
 }
 
-/** 
+/**
  * Helper Functions
 */
 
 function getObjectValueWithDotNotation(object, keys) {
-  return keys.split('.').reduce(function (o, k) {
+  return keys.split('.').reduce(function(o, k) {
     return (o || {})[k];
   }, object);
 }
 
 function downloadCSV(data: string, filename: string) {
-  let htmlElement = document.createElement("a");
+  const htmlElement = document.createElement('a');
   htmlElement.setAttribute('style', 'display:none;');
   document.body.appendChild(htmlElement);
 
-  let blob = new Blob([data], { type: 'text/csv' });
-  let url = window.URL.createObjectURL(blob);
+  const blob = new Blob([data], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
   htmlElement.href = url;
 
-  let isIE = /*@cc_on!@*/false || !!(<any>document).documentMode;
+  const isIE = /*@cc_on!@*/false || !!(document as any).documentMode;
 
   if (isIE) {
-    let retVal = navigator.msSaveBlob(blob, filename + '.csv');
-  }
-  else {
+    const retVal = navigator.msSaveBlob(blob, filename + '.csv');
+  } else {
     htmlElement.download = filename + '.csv';
   }
 

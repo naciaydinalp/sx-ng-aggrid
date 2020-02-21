@@ -5,26 +5,28 @@ export interface IFilter {
     dateTo?: string;
     filterType: string;
     type: string;
-};
+}
 
 export interface IFilterModel {
-    [index: string]: IFilter
-};
+    [index: string]: IFilter;
+}
 
 export function gridFilterFormatter(staticFilterModel: IFilterModel, gridFilterModel: IFilterModel): string {
-    if (!staticFilterModel && !gridFilterModel)
+    if (!staticFilterModel && !gridFilterModel) {
         return undefined;
+    }
 
-    let formattedFilter: any = {};
-    let filterModel: IFilterModel = Object.assign(gridFilterModel, staticFilterModel);
+    const formattedFilter: any = {};
+    const filterModel: IFilterModel = Object.assign(gridFilterModel, staticFilterModel);
     Object.keys(filterModel).forEach((key) => {
 
         // If we have a object notation '.' do nothing
         // This will be handled in include params
-        if (key.indexOf('.') > 0)
+        if (key.indexOf('.') > 0) {
             return;
+        }
 
-        let filter = filterModel[key];
+        const filter = filterModel[key];
         switch (filter.filterType) {
             case 'text':
                 formattedFilter[key] = textFilterFormatter(filter);

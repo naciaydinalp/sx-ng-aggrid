@@ -10,7 +10,7 @@ export class TestComponent implements OnInit {
   params: GridParams = {
     httpEndpoint: 'http://localhost:3000/api/area',
     httpIncludeParam: [{ model: 'factory', attributes: ['id', 'name'] }],
-    keepUserFilterSort: true,
+    keepUserFilterSort: false,
     gridFunctions: {
       addBaseUrl: '/area/edit',
       editBaseUrl: '/area/edit',
@@ -18,16 +18,16 @@ export class TestComponent implements OnInit {
       canDelete: true,
       canEdit: true
     },
-    initialSortModel: null,
+    initialSortModel: [{colId: 'name', sort: 'ASC'}],
     staticFilter: null,
     columnDefs: [
-      { headerName: "ID", field: "id", filter: GridFilterType.Number, hide: true },
-      { headerName: "Name", field: "name", width: 280 },
-      { headerName: "comment", field: "comment" },
-      { headerName: "factoryId", field: "factory.name" },
-      { headerName: "status", field: "status" },
-      { headerName: "createdAt", field: "createdAt", width: 200, filter: GridFilterType.Date, valueFormatter: GridValueFormatter.date },
-      { headerName: "updatedAt", field: "updatedAt", width: 200, filter: GridFilterType.Date, valueFormatter: GridValueFormatter.date }
+      { headerName: 'ID', field: 'id', filter: GridFilterType.Number, hide: true },
+      { headerName: 'Name', field: 'name', width: 280 },
+      { headerName: 'comment', field: 'comment' },
+      { headerName: 'factoryId', field: 'factory.name' },
+      { headerName: 'status', field: 'status' },
+      { headerName: 'createdAt', field: 'createdAt', width: 200, filter: GridFilterType.Date, valueFormatter: GridValueFormatter.date },
+      { headerName: 'updatedAt', field: 'updatedAt', width: 200, filter: GridFilterType.Date, valueFormatter: GridValueFormatter.date }
     ]
   };
   constructor() { }
