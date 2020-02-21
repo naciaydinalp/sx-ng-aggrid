@@ -28,6 +28,7 @@ export interface GridParams {
     canAdd: boolean,
     canEdit: boolean,
     canDelete: boolean,
+    hideView?: boolean;
   };
   columnDefs: Partial<AgGridColumn>[];
   keepUserFilterSort: boolean;
@@ -285,7 +286,9 @@ export class GridComponent implements OnInit, OnDestroy {
     this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
       this.rowViewData.push({
         headerName: column.headerName,
-        value: column.valueFormatter ? column.valueFormatter({ value: getObjectValueWithDotNotation(selRow, column.field) }) : getObjectValueWithDotNotation(selRow, column.field)
+        value: column.valueFormatter
+          ? column.valueFormatter({ value: getObjectValueWithDotNotation(selRow, column.field) })
+          : getObjectValueWithDotNotation(selRow, column.field)
       });
     });
 

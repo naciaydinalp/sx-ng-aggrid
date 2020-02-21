@@ -5,7 +5,7 @@
             <div class="col-md-5">
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group mr-2" role="group">
-                        <button type="button" class="btn btn-secondary" (click)="onButtonView()" data-toggle="tooltip"
+                        <button *ngIf="!params?.gridFunctions?.hideView" type="button" class="btn btn-secondary" (click)="onButtonView()" data-toggle="tooltip"
                             data-placement="top" title="View Record">
                             <i class="fa fa-search-plus">&nbsp;</i>
                         </button>
