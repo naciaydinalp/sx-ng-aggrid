@@ -32,6 +32,7 @@ export interface GridParams {
   };
   columnDefs: Partial<AgGridColumn>[];
   keepUserFilterSort: boolean;
+  doNotUsePagination?: boolean;
 }
 
 @Component({
@@ -103,7 +104,11 @@ export class GridComponent implements OnInit, OnDestroy {
     };
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    if (this.params.doNotUsePagination) {
+    this.pageRowCount = Number.MAX_SAFE_INTEGER;
+    }
+   }
 
   ngOnDestroy() {
     this.saveLocalStorageData();

@@ -20,6 +20,7 @@ export class TestComponent implements OnInit {
     },
     initialSortModel: [{colId: 'name', sort: 'ASC'}],
     staticFilter: null,
+    doNotUsePagination: false,
     columnDefs: [
       { headerName: 'ID', field: 'id', filter: GridFilterType.Number, hide: true },
       { headerName: 'Name', field: 'name', width: 280 },
