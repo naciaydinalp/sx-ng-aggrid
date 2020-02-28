@@ -33,6 +33,7 @@ export interface GridParams {
   columnDefs: Partial<AgGridColumn>[];
   keepUserFilterSort: boolean;
   doNotUsePagination?: boolean;
+  idColName?: string;
 }
 
 @Component({
@@ -106,9 +107,9 @@ export class GridComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (this.params.doNotUsePagination) {
-    this.pageRowCount = Number.MAX_SAFE_INTEGER;
+      this.pageRowCount = Number.MAX_SAFE_INTEGER;
     }
-   }
+  }
 
   ngOnDestroy() {
     this.saveLocalStorageData();
@@ -200,7 +201,8 @@ export class GridComponent implements OnInit, OnDestroy {
     }
 
     this.saveLocalStorageData();
-    this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${selRow.id}`], { queryParams: { returnUrl: this.router.url } });
+    this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${selRow[this.params.idColName || 'id']}`],
+      { queryParams: { returnUrl: this.router.url } });
   }
 
   onButtonDelete() {
@@ -214,7 +216,7 @@ export class GridComponent implements OnInit, OnDestroy {
 
     if (confirm('Delete?')) {
       this.http
-        .delete(this.params.httpEndpoint + '/' + selRow.id)
+        .delete(this.params.httpEndpoint + '/' + selRow[this.params.idColName || 'id'])
         .subscribe(
           (result) => {
             this.refresh();
@@ -298,7 +300,7 @@ export class GridComponent implements OnInit, OnDestroy {
     });
 
     this.saveLocalStorageData();
-    this.rowViewDataId = selRow.id;
+    this.rowViewDataId = selRow[this.params.idColName || 'id'];
     this.isRowViewMode = true;
   }
 
@@ -359,7 +361,7 @@ export class GridComponent implements OnInit, OnDestroy {
 */
 
 function getObjectValueWithDotNotation(object, keys) {
-  return keys.split('.').reduce(function(o, k) {
+  return keys.split('.').reduce(function (o, k) {
     return (o || {})[k];
   }, object);
 }
