@@ -1,12 +1,12 @@
 <!-- Grid View -->
 <div *ngIf="!isRowViewMode" style="width: 100%; height: 100%;" class="container-fluid sx-ng-aggrid-main">
-    <div style="width: 100%;height:42px" class=" sx-ng-aggrid-toolbar">
+    <div style="width: 100%;min-height:42px" class=" sx-ng-aggrid-toolbar">
         <div class="row">
-            <div class="col-md-5">
+            <div class="col-md-5 mb-1">
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group mr-2" role="group">
-                        <button *ngIf="!params?.gridFunctions?.hideView" type="button" class="btn btn-secondary" (click)="onButtonView()" data-toggle="tooltip"
-                            data-placement="top" title="View Record">
+                        <button *ngIf="!params?.gridFunctions?.hideView" type="button" class="btn btn-secondary"
+                            (click)="onButtonView()" data-toggle="tooltip" data-placement="top" title="View Record">
                             <i class="fa fa-search-plus">&nbsp;</i>
                         </button>
                         <button *ngIf="params?.gridFunctions?.canAdd" type="button" class="btn btn-secondary"
@@ -32,16 +32,16 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-2 float-center">
-                <button type="button" class="btn btn-light" disabled>
+            <div class="col-md-2 mb-1">
+                <button type="button" class="btn btn-light count-btn" disabled>
                     <i class="fa fa-database">: {{totalRowCount}}</i>
                 </button>
             </div>
-            <div class="col-md-1">
+            <div class="mb-1" [ngClass]="!params?.doNotUsePagination ? 'col-md-1' : 'col-md-5 ml-auto text-right'">
                 <ng-content select="[extra-buttons]"></ng-content>
             </div>
-            <div class="col-md-4" *ngIf="!params?.doNotUsePagination">
-                <div class="btn-group mr-2 float-right" role="group">
+            <div class="col-md-4 mb-1 pagination" *ngIf="!params?.doNotUsePagination">
+                <div class="btn-group ml-auto" role="group">
                     <button type="button" class="btn btn-secondary" (click)="onButtonBackward()">
                         <i class="fa fa-backward">&nbsp;</i>
                     </button>
@@ -69,7 +69,7 @@
 <!-- Row View -->
 <div *ngIf="isRowViewMode" class="container-fluid">
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-8 mb-1">
             <h3>Details
                 <span class="pull-right">
                     <button *ngIf="params?.gridFunctions?.canEdit" type="button" class="btn btn-primary"
